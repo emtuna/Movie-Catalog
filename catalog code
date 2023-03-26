@@ -1,0 +1,138 @@
+#include <iostream>
+#include <string>
+#include <fstream>
+using namespace std;
+
+void dataInput(string);
+void dataOutput(string);
+
+
+struct Movie
+{
+	string movieName;
+	double stars;
+	string genre; 
+	string movieActors;
+};
+
+int main()
+{
+	string file = "C:\\Users\\emtun\\OneDrive\\Desktop\\c++\\MovieReview.txt";
+	int a = 0;
+
+	while (a != 3)
+	{
+		cout << "Enter 1 to enter a new movie, 2 to search for a movie, or 3 to quit: \n";
+		cin >> a;
+		cin.ignore();
+		switch (a)
+		{
+		case 1:
+			cout << " Movie Entry: \n" << endl;
+			dataInput(file);
+			break;
+		case 2:
+			cout << "Movie Search:\n" << endl;
+			dataOutput(file);
+			break;
+		case 3:
+			cout << "Good Bye!\n";
+			return 0;
+			break;
+		default:
+			cout << "Wrong input try again:\n";
+		}
+	}
+}
+
+void dataInput(string s)
+{
+	ofstream file_writer;
+	file_writer.open(s, ios::app);
+
+	int input_numbers; //number of students your inputing
+
+	cout << "how many movies are you reviewing? \n";
+	cin >> input_numbers;
+	cin.ignore();
+
+	cout << "Enter your records \n";
+
+	for (int i = 1; i <= input_numbers; i++) //runs through the inputs for how many students you had entered
+	{ // i = 1 bc it wouldve started with movie 0 - DNE
+		Movie z;
+
+		cout << "you are now entering info for movie " << i << " : " << endl;
+		cout << "enter the movie's name: \n";
+		getline(cin, z.movieName);
+		cout << "out of 5, how many stars would you rate the film: \n";
+		cin >> z.stars;
+		cin.ignore();
+		cout << "enter the movie's genre: \n";
+		getline(cin, z.genre);
+		cout << "enter any noticible actors \n";
+		getline(cin, z.movieActors);
+
+		file_writer << z.movieName << endl;
+		file_writer << z.stars << endl;
+		file_writer << z.genre << endl;
+		file_writer << z.movieActors << endl;
+	}
+
+	file_writer.close();
+}
+
+void dataOutput(string s)
+{
+	int line_count = 0; //line counter
+	ifstream file_reader(s);
+
+	while (not file_reader.eof())
+	{
+		string input;
+		getline(file_reader, input);
+		line_count++; //running the file to get the lines
+	}
+	file_reader.close();
+
+	file_reader.clear();
+	file_reader.seekg(0);
+
+//populate
+	Movie* arr = new Movie[line_count / 4]; 
+
+	file_reader.open(s);
+
+	for (int i = 0; i < line_count / 4; i++)
+	{
+		file_reader >> arr[i].movieName;
+		file_reader >> arr[i].stars;
+		file_reader >> arr[i].genre;
+		file_reader >> arr[i].movieActors;
+	}
+
+//search	
+	string search_id;
+	bool found = false;
+
+	cout << "Enter the name of the movie you would like to look for: ";
+	getline(cin, search_id);
+
+	for (int i = 0; i < line_count / 4; i++) //each student has 3 inputs
+	{
+		if (arr[i].movieName == search_id)
+		{
+			cout << "movie's name: " << arr[i].movieName << endl;
+			cout << "you rated it " << arr[i].stars << " out of 5 stars" << endl;
+			cout << "genre: " << arr[i].genre << endl;
+			cout << "noticible actors include: " << arr[i].movieActors << endl;
+			found = true;
+			break;
+		}
+	}
+	if (found)
+		cout << "Finished.\n";
+	else
+		cout << "Not in this record.\n";
+}
+
